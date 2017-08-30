@@ -10,6 +10,10 @@ project(simulation_plugins)
 find_package(catkin REQUIRED COMPONENTS
   gazebo_ros
   roscpp
+  message_generation
+  std_msgs
+  geometry_msgs
+  sensor_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -64,11 +68,11 @@ target_link_libraries(logical_camera_plugin
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+ add_message_files(
+   FILES
+   Model.msg
+   LogicalCameraImage.msg
+ )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -85,10 +89,12 @@ target_link_libraries(logical_camera_plugin
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+   std_msgs
+   geometry_msgs
+   sensor_msgs
+ )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -122,7 +128,7 @@ target_link_libraries(logical_camera_plugin
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES simulation_plugins
-  CATKIN_DEPENDS gazebo_ros roscpp
+  CATKIN_DEPENDS gazebo_ros roscpp message_runtime std_msgs geometry_msgs sensor_msgs
 #  DEPENDS system_lib
 )
 

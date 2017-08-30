@@ -29,35 +29,40 @@ void LogicalCameraPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
     ROS_INFO("_aspect_ratio:=%g",this->parentSensor->AspectRatio());
 
     nh = new ros::NodeHandle("~");
-    string topic_name = "test_topic";
-    model_pub = nh->advertise<std_msgs::String>(topic_name, 1, true);
+    image_pub = nh->advertise<simulation_plugins::LogicalCameraImage>("logical_camera_image", 1, true);
 }
 
 void LogicalCameraPlugin::OnUpdate(){
     msgs::LogicalCameraImage logical_image;
+    simulation_plugins::LogicalCameraImage msg;
 
     logical_image = this->parentSensor->Image();
-    stringstream string_msg;
-    msgs::Vector3d cameraPosition = logical_image.pose().position();
-    msgs::Quaternion cameraOrientation = logical_image.pose().orientation();
 
-    string_msg << "Camera" << endl;
-    string_msg << "Position: " << cameraPosition.x()
-         << " - " << cameraPosition.y()
-         << " - " << cameraPosition.z() << endl;
-    string_msg << "Orientation: " << cameraOrientation.x()
-         << " - " << cameraOrientation.y()
-         << " - " << cameraOrientation.z()
-         << " - " << cameraOrientation.w() << endl;
+    msg.pose.position.x = logical_image.pose().position().x();
+    msg.pose.position.y = logical_image.pose().position().y();
+    msg.pose.position.z = logical_image.pose().position().z();
+
+    msg.pose.orientation.x = logical_image.pose().orientation().x();
+    msg.pose.orientation.y = logical_image.pose().orientation().y();
+    msg.pose.orientation.z = logical_image.pose().orientation().z();
+    msg.pose.orientation.w = logical_image.pose().orientation().w();
 
     int number_of_models = logical_image.model_size();
-    string_msg << "there are " << number_of_models << " models:" << endl;
     for(int i=0; i < number_of_models; i++){
-        string_msg << logical_image.model(i).name() << endl;
+        simulation_plugins::Model model_msg;
+        model_msg.pose.position.x = logical_image.model(i).pose().position().x();
+        model_msg.pose.position.y = logical_image.model(i).pose().position().y();
+        model_msg.pose.position.z = logical_image.model(i).pose().position().z();
+
+        model_msg.pose.orientation.x = logical_image.model(i).pose().orientation().x();
+        model_msg.pose.orientation.y = logical_image.model(i).pose().orientation().y();
+        model_msg.pose.orientation.z = logical_image.model(i).pose().orientation().z();
+        model_msg.pose.orientation.w = logical_image.model(i).pose().orientation().w();
+
+        model_msg.type = logical_image.model(i).name();
+
+        msg.models.push_back(model_msg);
     }
 
-    std_msgs::String msg;
-    msg.data = string_msg.str();
-    model_pub.publish(msg);
-
+    this->image_pub.publish(msg);
 }

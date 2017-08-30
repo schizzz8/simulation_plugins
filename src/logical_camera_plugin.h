@@ -10,6 +10,8 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 
+#include <simulation_plugins/LogicalCameraImage.h>
+
 namespace gazebo {
 class LogicalCameraPlugin : public SensorPlugin{
 public:
@@ -19,7 +21,7 @@ public:
     virtual void Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf);
 protected:
     ros::NodeHandle *nh;
-    ros::Publisher model_pub;
+    ros::Publisher image_pub;
 private:
     virtual void OnUpdate();
 
